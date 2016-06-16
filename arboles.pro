@@ -118,8 +118,8 @@ etiquetamiento([R|H],Arb) :- 	contarNodos(R,Nn), contarListas([R|H],Nl), NN is N
 								delete(Ln,NN,La), delete(Ln,Aux,Lnaux), crear_aristas(Nn,H,Lnaux,La,_,_,Aux,A), Arb = nodo(Aux,A).
 	
 %%% VERIFICAR QUE TODOS LOS ARBOLES DE N NODOS R-ARIOS SON BIEN ETIQUETABLES %%%
-esqEtiquetable().
-esqEtiquetable().
+
+esqEtiquetable(N,R):- forall((esqueleto(N,R,Esq), etiquetamiento(Esq,Arb)), bienEtiquetado(Arb)).
 
 %%% IMPRIMIR ARBOL %%% 
 
