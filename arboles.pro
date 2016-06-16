@@ -101,20 +101,20 @@ contarListas([L|R],N):- contarNodos(L,Nn), contarListas(R,Nl), N is Nn+Nl.
 /*
 	Obtenemos el primer elemento de una lista
 */
-obtener_primero([C|R],X):- X is C.
+obtener_primero([C|_],X):- X is C.
 
 /*
 	Tomamos los elementos restantes de la lista para luego generar el nuevo esqueleto
 	en la generacion del arbol (recorrido del esqueleto)
 */
-tomar_elementos(_,[],[]).
-tomar_elementos(N,L,S):- [C|R] = L, length(X, N), append(X, Y, C), S = Y.
+tomarElementos(_,[],[]).
+tomarElementos(N,L,S):- [C|_] = L, length(X, N), append(X, Y, C), S = Y.
 
 /*
 	Devolvemos todos los elementos de la lista en iteraciones distintas, para tener todas las posibilidades
 	de etiquetamientos en el arbol
 */
-usar_todos(X, [Y|T]) :- X = Y; usar_todos(X, T).
+usarTodos(X, [Y|T]) :- X = Y; usarTodos(X, T).
 
 /*
 	Creamos las aristas para cada nodo verificando los etiquetamientos.
@@ -123,11 +123,11 @@ usar_todos(X, [Y|T]) :- X = Y; usar_todos(X, T).
 	los elementos ya utlizados de las listas de nodos y aristas, verificamos que las etiquetas correspondan a 
 	un buen etiquetamiento y creamos la lista correspondiente de aristas.
 */
-crear_aristas(0,_,Ln,La,Ln,La,_,[]).
-crear_aristas(N,Esq,Ln,La,LN2,LA2,Nn,A) :- 	[R|Ni] = Esq, [C|T1] = R, tomar_elementos(C,Ni,NL), append([NL],[],Esqaux), 
-											append([T1],Esqaux,NE), usar_todos(Nod,Ln), usar_todos(Ar,La), delete(Ln,Nod,Lnaux), 
-											delete(La,Ar,Laaux), resta_abs(Ar, Nod, Nn), crear_aristas(C,Ni,Lnaux,Laaux,LN1,LA1,Nod,A1), 
-											NN is N-1, crear_aristas(NN,NE,LN1,LA1,LN2,LA2,Nn,A2), append([arista(Ar,nodo(Nod,A1))],A2,A).
+crearAristas(0,_,Ln,La,Ln,La,_,[]).
+crearAristas(N,Esq,Ln,La,LN2,LA2,Nn,A) :- 	[R|Ni] = Esq, [C|T1] = R, tomarElementos(C,Ni,NL), append([NL],[],Esqaux), 
+											append([T1],Esqaux,NE), usarTodos(Nod,Ln), usarTodos(Ar,La), delete(Ln,Nod,Lnaux), 
+											delete(La,Ar,Laaux), resta_abs(Ar, Nod, Nn), crearAristas(C,Ni,Lnaux,Laaux,LN1,LA1,Nod,A1), 
+											NN is N-1, crearAristas(NN,NE,LN1,LA1,LN2,LA2,Nn,A2), append([arista(Ar,nodo(Nod,A1))],A2,A).
 
 
 /*
@@ -136,8 +136,8 @@ crear_aristas(N,Esq,Ln,La,LN2,LA2,Nn,A) :- 	[R|Ni] = Esq, [C|T1] = R, tomar_elem
 	de nodos, creamos las aristas con los elementos obtenidos y agregamos el nodo con su etiqueta correspondiente 
 	al arbol
 */
-etiquetamiento([R|H],A) :- 	contarNodos(R,Nn), contarListas([R|H],Nl), NN is Nl +1, numlist(1,NN,Ln), usar_todos(Aux,Ln), 
-							delete(Ln,NN,La), delete(Ln,Aux,Lnaux), crear_aristas(Nn,H,Lnaux,La,_,_,Aux,Ear), A = nodo(Aux,Ear).
+etiquetamiento([R|H],A) :- 	contarNodos(R,Nn), contarListas([R|H],Nl), NN is Nl +1, numlist(1,NN,Ln), usarTodos(Aux,Ln), 
+							delete(Ln,NN,La), delete(Ln,Aux,Lnaux), crearAristas(Nn,H,Lnaux,La,_,_,Aux,Ear), A = nodo(Aux,Ear).
 	
 %%% VERIFICAR QUE TODOS LOS ARBOLES DE N NODOS R-ARIOS SON BIEN ETIQUETABLES %%%
 /*
