@@ -81,6 +81,32 @@ esqueleto(X,R,_):- X is 1, R>0 -> !, false.
 esqueleto(X,R,_):- X is 1, R is 0 -> !.
 esqueleto(X,R,Esq):- X>1 -> Nn is X-1, formarEsqueleto(Nn,R,[],1,Esq).
 
+%%% GENERAR ARBOL BIEN ETIQUETADO A PARTIR DE ESQUELETO %%%
+
+/*
+	Contamos en los niveles del arbol
+*/
+contarListas([],0).
+contarListas([L|R],N):- contarNodos(L,Nn), contarListas(R,Nl), N is Nn+Nl.
+
+/*
+	Obtenemos el primer elemento de una lista
+*/
+obtener_primero([C|R],X):- X is C.
+
+/*
+	Obtenemos el ultimo elemento de una lista
+*/
+obtener_ultimo(X,[X]).
+obtener_ultimo(X,[_|L]) :- obtener_ultimo(X,L).
+
+/*
+	Generamos el arbol a partir del esqueleto dado
+*/
+etiquetamiento([[]],[]).
+etiquetamiento([R|N],Arb) :- 	contarNodos(R,Nn), contarListas([R|N],Nl), NN is Nn +1, numlist(1,NN,Ln), 
+								obtener_primero(Ln,P), obtener_ultimo(Ln,U), between(P,U,Aux), 
+								crear_aristas(Nn,N,Ln,Ln,Q,Z,Aux,Arist), Arbol = nodo(Aux,Arist).
 %%% IMPRIMIR ARBOL %%% 
 
 escribirLineas(0).
