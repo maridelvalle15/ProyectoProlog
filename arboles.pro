@@ -1,3 +1,10 @@
+/*
+	Laboratorio de Lenguajes de Programación
+	Autores: 	Mathieu De Valery 10-10193
+				Marisela Del Valle 11-10267
+	Prof. Wilmer Pereira
+*/
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%% ÁRBOLES COMO ESTRUCTURAS %%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -50,6 +57,7 @@ contarNodos([X|Xs], S):- contarNodos(Xs, S2), S is S2 + X.
 
 /* 
 	Creamos el siguiente nivel del arbol con el numero de hijos correspondientes a cada nodo
+	Realizamos las verificaciones pertinentes  para generar las listas
 */
 siguienteLista(0,_,C,C,L,L).
 %siguienteLista(TL,R,C,Caux,L,SL):- Caux is 0 -> append(L,[0],NL), NC is 0, NTL is TL-1, siguienteLista(NTL,R,NC,Caux,NL,SL).
@@ -62,13 +70,14 @@ siguienteLista(TL,R,C,Caux,L,SL):- TL>0, C < R -> 	between(1,C,C1), append(L,[C1
 
 /*
 	Se toma una decision de acuerdo a la cantidad de nodos que se haya agregado al arbol
+	Si ya no quedan hijos por agregar, se crean la lista correspondiente de ceros
 */
 decidir(Caux,R,NL,T,Esq):- Caux \= 0 -> formarEsqueleto(Caux,R,NL,T,Esq).
 decidir(Caux,R,NL,T,Esq):- Caux is 0, siguienteLista(T,R,0,Caux,[],SL), append(NL,[SL],LF), 
 										formarEsqueleto(0,R,LF,T,Esq).
 
 /* 
-	Formamos el esqueleto del arbol
+	Formamos el esqueleto del arbol con los predicados ya definidos
 */
 formarEsqueleto(0,_,L,_,L).
 formarEsqueleto(N,R,L,TL,Esq):- N>0 -> siguienteLista(TL,R,N,Caux,[],SL), contarNodos(SL,T), 
@@ -84,7 +93,7 @@ esqueleto(X,R,Esq):- X>1 -> Nn is X-1, formarEsqueleto(Nn,R,[],1,Esq).
 %%% GENERAR ARBOL BIEN ETIQUETADO A PARTIR DE ESQUELETO %%%
 
 /*
-	Contamos en los niveles del arbol
+	Contamos en los niveles del arbol para obtener nodos
 */
 contarListas([],0).
 contarListas([L|R],N):- contarNodos(L,Nn), contarListas(R,Nl), N is Nn+Nl.
@@ -95,35 +104,47 @@ contarListas([L|R],N):- contarNodos(L,Nn), contarListas(R,Nl), N is Nn+Nl.
 obtener_primero([C|R],X):- X is C.
 
 /*
-	Tomamos los elementos restantes de la lista
+	Tomamos los elementos restantes de la lista para luego generar el nuevo esqueleto
+	en la generacion del arbol (recorrido del esqueleto)
 */
 tomar_elementos(_,[],[]).
 tomar_elementos(N,L,S):- [C|R] = L, length(X, N), append(X, Y, C), S = Y.
 
 /*
-	Devolvemos todos los elementos de la lista en iteraciones distintas
+	Devolvemos todos los elementos de la lista en iteraciones distintas, para tener todas las posibilidades
+	de etiquetamientos en el arbol
 */
 usar_todos(X, [Y|T]) :- X = Y; usar_todos(X, T).
 
 /*
-	Creamos las aristas para cada nodo verificando los etiquetamientos
+	Creamos las aristas para cada nodo verificando los etiquetamientos.
+	Tomamos los elementos correspondientes del esqueleto y creamos una lista para recorrer el esqueleto e 
+	ir generando el arbol, se toma la etiqueta que corresponde para crear todas las combinaciones, eliminamos
+	los elementos ya utlizados de las listas de nodos y aristas, verificamos que las etiquetas correspondan a 
+	un buen etiquetamiento y creamos la lista correspondiente de aristas.
 */
 crear_aristas(0,_,Ln,La,Ln,La,_,[]).
 crear_aristas(N,Esq,Ln,La,LN2,LA2,Nn,A) :- 	NN is N-1, [R|Ni] = Esq, [C|T1] = R, tomar_elementos(C,Ni,NL), append([NL],[],Esqaux), 
 											append([T1],Esqaux,NE), usar_todos(Nod,Ln), usar_todos(Ar,La), delete(Ln,Nod,Lnaux), 
-											resta_abs(Ar, Nod, Nn), delete(La,Ar,Laaux), crear_aristas(C,Ni,Lnaux,Laaux,LN1,LA1,Nod,A1), 
+											delete(La,Ar,Laaux), resta_abs(Ar, Nod, Nn), crear_aristas(C,Ni,Lnaux,Laaux,LN1,LA1,Nod,A1), 
 											crear_aristas(NN,NE,LN1,LA1,LN2,LA2,Nn,A2), append([arista(Ar,nodo(Nod,A1))],A2,A).
 
 
 /*
-	Generamos el arbol a partir del esqueleto dado
+	Generamos el arbol a partir del esqueleto dado.
+	Contamos los nodos del esqueleto, le sumamos 1 para contar la raiz, creamos una lista desde 1 hasta el numero 
+	de nodos, creamos las aristas con los elementos obtenidos y agregamos el nodo con su etiqueta correspondiente 
+	al arbol
 */
 etiquetamiento([R|H],Arb) :- 	contarNodos(R,Nn), contarListas([R|H],Nl), NN is Nl +1, numlist(1,NN,Ln), usar_todos(Aux,Ln), 
 								delete(Ln,NN,La), delete(Ln,Aux,Lnaux), crear_aristas(Nn,H,Lnaux,La,_,_,Aux,A), Arb = nodo(Aux,A).
 	
 %%% VERIFICAR QUE TODOS LOS ARBOLES DE N NODOS R-ARIOS SON BIEN ETIQUETABLES %%%
-
-esqEtiquetable(N,R):- forall((esqueleto(N,R,Esq), etiquetamiento(Esq,Arb)), bienEtiquetado(Arb)).
+/*
+	Con los predicados ya definidos, verificamos que para las variables dadas se cumpla que todos los posibles
+	arboleas sean bien etiquetados
+*/
+esqEtiquetables(N,R):- forall((esqueleto(N,R,Esq), etiquetamiento(Esq,Arb)), bienEtiquetado(Arb)).
 
 %%% IMPRIMIR ARBOL %%% 
 
