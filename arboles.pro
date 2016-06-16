@@ -116,7 +116,11 @@ crear_aristas(N,Esq,Ln,La,LN2,LA2,Nn,A) :- 	N > 0, NN is N-1, [R|Ni] = Esq, [C|T
 */
 etiquetamiento([R|H],Arb) :- 	contarNodos(R,Nn), contarListas([R|H],Nl), NN is Nl +1, numlist(1,NN,Ln), member(Aux,Ln), 
 								delete(Ln,NN,La), delete(Ln,Aux,Lnaux), crear_aristas(Nn,H,Lnaux,La,_,_,Aux,A), Arb = nodo(Aux,A).
-								
+	
+%%% VERIFICAR QUE TODOS LOS ARBOLES DE N NODOS R-ARIOS SON BIEN ETIQUETABLES %%%
+esqEtiquetable().
+esqEtiquetable().
+
 %%% IMPRIMIR ARBOL %%% 
 
 escribirLineas(0).
