@@ -80,3 +80,14 @@ formarEsqueleto(N,R,L,TL,Esq):- N>0 -> siguienteLista(TL,R,N,Caux,[],SL), contar
 esqueleto(X,R,_):- X is 1, R>0 -> !, false.
 esqueleto(X,R,_):- X is 1, R is 0 -> !.
 esqueleto(X,R,Esq):- X>1 -> Nn is X-1, formarEsqueleto(Nn,R,[],1,Esq).
+
+%%% IMPRIMIR ARBOL %%% 
+
+escribirLineas(0).
+escribirLineas(X):- X>0 -> write("--------"), N is X-1, escribirLineas(N).
+
+imprimir(nodo(_,[]),_).
+
+imprimir(nodo(C,[arista(A,nodo(B,L))|NS]),X):- nl, escribirLineas(X), W is X + 1, write("("), write(C), write(")"), write("--"), write(A), write("--"), write("("), write(B), write(")"), imprimir(nodo(B,L),W), imprimir(nodo(C,NS),X).
+
+describirEtiquetamiento(nodo(C,L)):- imprimir(nodo(C,L),0).
