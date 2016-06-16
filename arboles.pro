@@ -124,10 +124,10 @@ usar_todos(X, [Y|T]) :- X = Y; usar_todos(X, T).
 	un buen etiquetamiento y creamos la lista correspondiente de aristas.
 */
 crear_aristas(0,_,Ln,La,Ln,La,_,[]).
-crear_aristas(N,Esq,Ln,La,LN2,LA2,Nn,A) :- 	NN is N-1, [R|Ni] = Esq, [C|T1] = R, tomar_elementos(C,Ni,NL), append([NL],[],Esqaux), 
+crear_aristas(N,Esq,Ln,La,LN2,LA2,Nn,A) :- 	[R|Ni] = Esq, [C|T1] = R, tomar_elementos(C,Ni,NL), append([NL],[],Esqaux), 
 											append([T1],Esqaux,NE), usar_todos(Nod,Ln), usar_todos(Ar,La), delete(Ln,Nod,Lnaux), 
 											delete(La,Ar,Laaux), resta_abs(Ar, Nod, Nn), crear_aristas(C,Ni,Lnaux,Laaux,LN1,LA1,Nod,A1), 
-											crear_aristas(NN,NE,LN1,LA1,LN2,LA2,Nn,A2), append([arista(Ar,nodo(Nod,A1))],A2,A).
+											NN is N-1, crear_aristas(NN,NE,LN1,LA1,LN2,LA2,Nn,A2), append([arista(Ar,nodo(Nod,A1))],A2,A).
 
 
 /*
