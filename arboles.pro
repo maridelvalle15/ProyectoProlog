@@ -103,11 +103,12 @@ tomar_elementos(N,L,S):- [C|R] = L, length(X, N), append(X, Y, C), S = Y.
 /*
 	Creamos las aristas para cada nodo verificando los etiquetamientos
 */
-crear_aristas(0,_,Ln,La,Ln,La,_,[]):- !.
-crear_aristas(N,Esq,Ln,La,LN,LA,Nn,Arist) :-	N > 0, NN is N-1, [R|Ni] = Esq, [C|RN] = R, tomar_elementos(C,Ni,NL),
-												append([NL],T2,NE2), append([RN],NE2,NE1), member(Nod,Ln), member(Ar,La),
-												delete(Ln,Nod,Lnaux), delete(La,Ar,Laaux), crear_aristas(C,Ni,Lnaux,Laaux,LN1,LA1,Nod,Arist1),
-												crear_aristas(NN,NE1,LN1,LA1,LN2,LA2,Nn,Arist2).
+crear_aristas(0,_,Ln,La,Ln,La,_,[]).
+crear_aristas(N,Esq,Ln,La,LN2,LA2,Nn,A) :- 	N > 0, NN is N-1, [R|Ni] = Esq, [C|T1] = R, tomar_elementos(C,Ni,NL), 
+											append([NL],T2,Esqaux), append([T1],Esqaux,NE),
+											member(Nod,Ln), member(Ar,La), resta_abs(Ar, Nod, Nn), delete(Ln,Nod,Lnaux),
+											delete(La,Ar,Laaux), crear_aristas(C,Ni,Lnaux,Laaux,LN1,LA1,Nod,A1),
+											crear_aristas(NN,NE,LN1,LA1,LN2,LA2,Nn,A2), append([arista(Ar,nodo(Nod,A1))],A2,A).
 
 
 /*
