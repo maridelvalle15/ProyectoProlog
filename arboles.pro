@@ -5,6 +5,7 @@
 	Prof. Wilmer Pereira
 */
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%% ÁRBOLES COMO ESTRUCTURAS %%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -43,9 +44,11 @@ nodoAux(C,[arista(A,nodo(B,L))|NS],R,Raux,Ar,ArAux):- C>0, A>0, B>0, integer(C),
 bienEtiquetado(nodo(C,L)) :- nodoAux(C,L,[],X,[],A), is_set(X), is_set(A), length(X,T), verificarNodosAristas(X,T), length(A,M), verificarNodosAristas(A,M).
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%% ÁRBOLES COMO LISTAS %%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%% CREAR ESQUELETO PARA FORMAR ARBOL R-ARIO %%%
 
@@ -60,7 +63,6 @@ contarNodos([X|Xs], S):- contarNodos(Xs, S2), S is S2 + X.
 	Realizamos las verificaciones pertinentes  para generar las listas
 */
 siguienteLista(0,_,C,C,L,L).
-%siguienteLista(TL,R,C,Caux,L,SL):- Caux is 0 -> append(L,[0],NL), NC is 0, NTL is TL-1, siguienteLista(NTL,R,NC,Caux,NL,SL).
 siguienteLista(TL,R,C,Caux,L,SL):- TL>0, C >= R -> 	between(1,R,R1), append(L,[R1],NL), NC is C-R1, 
 													NTL is TL-1, siguienteLista(NTL,R1,NC,Caux,NL,SL).
 siguienteLista(TL,R,C,_,L,SL):- TL>0, C is 0 -> append(L,[0],NL), NC is C-C, NTL is TL-1, 
@@ -89,6 +91,7 @@ formarEsqueleto(N,R,L,TL,Esq):- N>0 -> siguienteLista(TL,R,N,Caux,[],SL), contar
 esqueleto(X,R,_):- X is 1, R>0 -> !, false.
 esqueleto(X,R,_):- X is 1, R is 0 -> !.
 esqueleto(X,R,Esq):- X>1 -> Nn is X-1, formarEsqueleto(Nn,R,[],1,Esq).
+
 
 %%% GENERAR ARBOL BIEN ETIQUETADO A PARTIR DE ESQUELETO %%%
 
@@ -138,6 +141,7 @@ crearAristas(N,Esq,Ln,La,LN2,LA2,Nn,A) :- 	[R|Ni] = Esq, [C|T1] = R, tomarElemen
 */
 etiquetamiento([R|H],A) :- 	contarNodos(R,Nn), contarListas([R|H],Nl), NN is Nl +1, numlist(1,NN,Ln), usarTodos(Aux,Ln), 
 							delete(Ln,NN,La), delete(Ln,Aux,Lnaux), crearAristas(Nn,H,Lnaux,La,_,_,Aux,Ear), A = nodo(Aux,Ear).
+
 	
 %%% VERIFICAR QUE TODOS LOS ARBOLES DE N NODOS R-ARIOS SON BIEN ETIQUETABLES %%%
 /*
@@ -145,6 +149,7 @@ etiquetamiento([R|H],A) :- 	contarNodos(R,Nn), contarListas([R|H],Nl), NN is Nl 
 	arboleas sean bien etiquetados
 */
 esqEtiquetables(N,R):- forall((esqueleto(N,R,Esq), etiquetamiento(Esq,Arb)), bienEtiquetado(Arb)).
+
 
 %%% IMPRIMIR ARBOL %%% 
 
