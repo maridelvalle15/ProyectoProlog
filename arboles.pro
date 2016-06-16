@@ -95,18 +95,27 @@ contarListas([L|R],N):- contarNodos(L,Nn), contarListas(R,Nl), N is Nn+Nl.
 obtener_primero([C|R],X):- X is C.
 
 /*
-	Obtenemos el ultimo elemento de una lista
+	Tomamos los elementos restantes de la lista
 */
-obtener_ultimo(X,[X]).
-obtener_ultimo(X,[_|L]) :- obtener_ultimo(X,L).
+tomar_elementos(_,[],[]).
+tomar_elementos(N,L,S):- [C|R] = L, length(X, N), append(X, Y, C), S = Y.
+
+/*
+	Creamos las aristas para cada nodo verificando los etiquetamientos
+*/
+crear_aristas(0,_,Ln,La,Ln,La,_,[]):- !.
+crear_aristas(N,Esq,Ln,La,LN,LA,Nn,Arist) :-	N > 0, NN is N-1, [R|Ni] = Esq, [C|RN] = R, tomar_elementos(C,Ni,NL),
+												append([NL],T2,NE2), append([RN],NE2,NE1), member(Nod,Ln), member(Ar,La),
+												delete(Ln,Nod,Lnaux), delete(La,Ar,Laaux), crear_aristas(C,Ni,Lnaux,Laaux,LN1,LA1,Nod,Arist1),
+												crear_aristas(NN,NE1,LN1,LA1,LN2,LA2,Nn,Arist2).
+
 
 /*
 	Generamos el arbol a partir del esqueleto dado
 */
-etiquetamiento([[]],[]).
-etiquetamiento([R|N],Arb) :- 	contarNodos(R,Nn), contarListas([R|N],Nl), NN is Nn +1, numlist(1,NN,Ln), 
-								obtener_primero(Ln,P), obtener_ultimo(Ln,U), between(P,U,Aux), 
-								crear_aristas(Nn,N,Ln,Ln,Q,Z,Aux,Arist), Arbol = nodo(Aux,Arist).
+etiquetamiento([R|H],Arb) :- 	contarNodos(R,Nn), contarListas([R|H],Nl), NN is Nl +1, numlist(1,NN,Ln), member(Aux,Ln), 
+								delete(Ln,NN,La), delete(Ln,Aux,Lnaux), crear_aristas(Nn,H,Lnaux,La,_,_,Aux,A), Arb = nodo(Aux,A).
+								
 %%% IMPRIMIR ARBOL %%% 
 
 escribirLineas(0).
